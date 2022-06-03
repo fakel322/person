@@ -13,12 +13,12 @@ int main()
             { "find", 6 }, { "delete", 7 }, { "exit", 8 }, { "birthday", 9 },
             { "write", 10 },
     };
-    std::cout << "Type -help to see command list\n";
+    std::cout << "Type help to see command list\n";
     PersonList list;
 
     while(std::cin) {
         int type;
-        std::string command, param;
+        std::string command;
 
         std::cin >> command;
         try {

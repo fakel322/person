@@ -76,7 +76,7 @@ void Util::execute(int type, PersonList& list) {
     switch (type) {
         case -1:
         default:
-            std::cout << "Unknown command, type '-help' to see command list.";
+            std::cout << "Unknown command, type 'help' to see command list.";
             break;
         case 0:
             std::cout <<
