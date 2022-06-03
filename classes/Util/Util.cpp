@@ -12,15 +12,6 @@ void operator>> (std::ifstream* fin, PersonList &List){
     }
 }
 
-std::ostream& operator<< (std::ostream &out, PersonList& list){
-    PersonNode *current = list.getHead();
-    while(current != nullptr){
-        out << current->data.getFullName() << ", " << current->data.getBirthDate() << ", " << current->data.getNumber() << std::endl;
-        current = current->next;
-    }
-    return out;
-}
-
 bool Util::checkName(const std::string& str)
 {
     std::regex r(R"([A-z\x80-\xFF-\s]{3,})");
@@ -42,7 +33,7 @@ bool Util::checkBirth(const std::string& str) {
         const int m = std::stoi(match[3].str());
         const int d = std::stoi(match[2].str());
 
-        if (y > 2022) return false;
+        if (y > 2022 || y < 1900) return false;
         if (m < 1 || m > 12) return false;
         if (d < 1 || d > 31) return false;
 
@@ -139,10 +130,10 @@ void Util::execute(int type, PersonList& list) {
             break;
         }
         case 5: {
-            PersonNode *shead;
-            shead = list.sort(list.getHead());
-            list.setHead(shead);
-            list.resetEnd();
+            std::string sortType;
+            std::cout << "Enter sort type: lex or date.";
+            std::cin >> sortType;
+            list.sort(sortType == "lex");
             std::cout << "The list was successfully sorted.\n";
             break;
         }

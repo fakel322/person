@@ -59,22 +59,22 @@ PersonNode& PersonList::operator[](const int index) {
     }
 }
 
-PersonNode* PersonList::merge(PersonNode* a, PersonNode* b)
+PersonNode* PersonList::merge(PersonNode* a, PersonNode* b, bool sortType)
 {
     if(a == nullptr) return b;
     if(b == nullptr) return a;
 
     PersonNode* c;
 
-    if(Person::compare(a->data, b->data, 1) == 0)
+    if(Person::compare(a->data, b->data, sortType ? 0 : 1) == 0)
     {
         c = a;
-        c->next = merge(a->next, b);
+        c->next = merge(a->next, b, sortType);
     }
     else
     {
         c = b;
-        c->next = merge(a, b->next);
+        c->next = merge(a, b->next, sortType);
     }
 
     return c;
@@ -101,7 +101,7 @@ PersonNode* PersonList::middle(PersonNode* head)
     return slow;
 }
 
-PersonNode* PersonList::sort(PersonNode* head)
+PersonNode* PersonList::sort_by(PersonNode* head, bool sortType)
 {
     if(head == nullptr || head->next == nullptr)
         return head;
@@ -111,44 +111,18 @@ PersonNode* PersonList::sort(PersonNode* head)
 
     mid->next = nullptr;
 
-    a = sort(a);
-    b = sort(b);
-    PersonNode* c = merge(a, b);
+    a = sort_by(a, sortType);
+    b = sort_by(b, sortType);
 
+    PersonNode* c = merge(a, b, sortType);
     return c;
 }
 
-void PersonList::addToSorted(Person& person) {
-    PersonNode *current = this->_head;
-    for(int i = 0; i < this->size(); i++){
-        if(Person::compare(person, current->data, 1) > 0){
-            this->insert(person,i);
-            return;
-        }
-        current = current->next;
-    }
-    this->add(person);
-}
-
-PersonNode *PersonList::insert(Person& person, int pos) {
-    auto *node = new(PersonNode);
-    node->data = person;
-    if((pos != 0) && (pos != this->_size)) {
-        PersonNode *rel = &(*this)[pos - 1];
-        node->next = rel->next;
-        rel->next = node;
-        return rel->next;
-    }
-    else{
-        if(pos == 0) {
-            node->next = this->_head;
-            this->_head = node;
-            return this->_head;
-        }
-        else {
-            this->add(person);
-        }
-    }
+void PersonList::sort(bool sortType)
+{
+    PersonNode* head = sort_by(this->_head, sortType);
+    this->_head = head;
+    this->_end = this->size() == 0 ? nullptr : &(*this)[this->size()-1];
 }
 
 void PersonList::remove(std::string fullName, std::string birthDate, std::string phoneNumber) {
@@ -182,19 +156,11 @@ void PersonList::save(std::ofstream* fout) {
     this->_end->data.write(fout);
 }
 
-PersonNode *PersonList::getHead(){
-    return this->_head;
-}
-
-void PersonList::setHead(PersonNode *nhead) {
-    this->_head = nhead;
-    return;
-}
-
-void PersonList::resetEnd(){
-    this->_end = this->size() == 0 ? nullptr : &(*this)[this->size()-1];
-}
-
-PersonNode *PersonList::getEnd(){
-    return this->_end;
+std::ostream &operator<<(std::ostream &out, const PersonList &List) {
+    PersonNode* current = List._head;
+    while(current != nullptr){
+        out << current->data.getFullName() << ", " << current->data.getBirthDate() << ", " << current->data.getNumber() << std::endl;
+        current = current->next;
+    }
+    return out;
 }
